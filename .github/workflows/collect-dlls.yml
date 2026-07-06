@@ -29,15 +29,22 @@ jobs:
           Write-Host "x86:"
           Get-ChildItem -Recurse -Path "examples\rootfs\x86_windows\Windows" | Select-Object FullName
           
-      - name: Zip both x86 and x64 Windows folders
+      - name: Zip both x86 and x64 Windows folders separately
         shell: pwsh
         run: |
-          Compress-Archive -Path "examples\rootfs\x8664_windows\Windows" -DestinationPath "windows_dlls_registry.zip"
-          Compress-Archive -Path "examples\rootfs\x86_windows\Windows" -DestinationPath "windows_dlls_registry.zip" -Update
+          Compress-Archive -Path "examples\rootfs\x8664_windows\Windows" -DestinationPath "x64_windows.zip"
+          Compress-Archive -Path "examples\rootfs\x86_windows\Windows" -DestinationPath "x86_windows.zip"
           
-      - name: Upload as artifact
+      - name: Upload x64 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-dlls-and-registry
-          path: windows_dlls_registry.zip
+          name: windows-dlls-x64
+          path: x64_windows.zip
+          retention-days: 3
+
+      - name: Upload x86 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-dlls-x86
+          path: x86_windows.zip
           retention-days: 3
