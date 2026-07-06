@@ -1,0 +1,40 @@
+name: Collect Qiling Windows DLLs and Registry
+
+on:
+  workflow_dispatch:
+
+jobs:
+  collect:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download dllscollector.bat from Qiling repo
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/qilingframework/qiling/master/examples/scripts/dllscollector.bat" -OutFile "dllscollector.bat"
+
+      - name: Run dllscollector.bat (runner is already Administrator)
+        shell: cmd
+        run: |
+          dllscollector.bat
+
+      - name: Verify collected files
+        shell: pwsh
+        run: |
+          Write-Host "Contenuto della cartella examples:"
+          Get-ChildItem -Recurse -Path "examples" | Select-Object FullName
+
+      - name: Zip the collected Windows folder
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "examples\rootfs\x8664_windows\Windows" -DestinationPath "windows_dlls_registry.zip"
+
+      - name: Upload as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-dlls-and-registry
+          path: windows_dlls_registry.zip
+          retention-days: 3
