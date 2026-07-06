@@ -21,6 +21,19 @@ jobs:
         run: |
           dllscollector.bat
 
+      - name: Debug x86 collection
+        shell: pwsh
+        run: |
+          Write-Host "Contenuto SysWOW64 su questo runner:"
+          Get-ChildItem "C:\Windows\SysWOW64\*.dll" | Select-Object -First 10 Name
+          Write-Host "---"
+          Write-Host "Contenuto x86_windows destinazione:"
+          if (Test-Path "examples\rootfs\x86_windows\Windows\System32") {
+            Get-ChildItem "examples\rootfs\x86_windows\Windows\System32" | Select-Object -First 10 Name
+          } else {
+            Write-Host "CARTELLA NON ESISTE: examples\rootfs\x86_windows\Windows\System32"
+          }
+
       - name: Verify collected files
         shell: pwsh
         run: |
