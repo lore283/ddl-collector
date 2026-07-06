@@ -24,14 +24,17 @@ jobs:
       - name: Verify collected files
         shell: pwsh
         run: |
-          Write-Host "Contenuto della cartella examples:"
-          Get-ChildItem -Recurse -Path "examples" | Select-Object FullName
-
-      - name: Zip the collected Windows folder
+          Write-Host "x64:"
+          Get-ChildItem -Recurse -Path "examples\rootfs\x8664_windows\Windows" | Select-Object FullName
+          Write-Host "x86:"
+          Get-ChildItem -Recurse -Path "examples\rootfs\x86_windows\Windows" | Select-Object FullName
+          
+      - name: Zip both x86 and x64 Windows folders
         shell: pwsh
         run: |
           Compress-Archive -Path "examples\rootfs\x8664_windows\Windows" -DestinationPath "windows_dlls_registry.zip"
-
+          Compress-Archive -Path "examples\rootfs\x86_windows\Windows" -DestinationPath "windows_dlls_registry.zip" -Update
+          
       - name: Upload as artifact
         uses: actions/upload-artifact@v4
         with:
